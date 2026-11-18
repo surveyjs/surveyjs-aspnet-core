@@ -1,0 +1,27 @@
+{
+  "//": "Copy to appsettings.Development.json (git-ignored) for local settings; `dotnet run` uses it. Environment variables with the same names win over both files.",
+  "APP_PORT": "8000",
+  "SURVEYJS_SERVICE_URL": "http://localhost:3010",
+  "VALIDATE_RESPONSES": "false",
+  "LINT_DEFINITIONS": "false",
+  "DEMO_MODE": "false",
+  "SURVEYJS_LICENSE_KEY": "",
+  "AI_BASE_URL": "https://api.openai.com/v1",
+  "AI_API_KEY": "",
+  "AI_MODEL": "gpt-4o-mini",
+  "SURVEYJS_AI_PROVIDER": "",
+  "SURVEYJS_AI_MODEL": "",
+  "SURVEYJS_OLLAMA_BASE_URL": "",
+  "OPENAI_API_KEY": "",
+  "ANTHROPIC_API_KEY": "",
+  "RELAY_URL": "",
+  "EDIT_RELAY_URL": "",
+  "DATA_DIR": "storage",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore": "Warning"
+    }
+  }
+}

@@ -2,17 +2,36 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>SurveyJsAspNetCore</RootNamespace>
+    <AssemblyName>surveyjs-aspnet-core</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15" PrivateAssets="all" />
+    <!-- SurveyJS from NuGet as ES modules (static web assets under /_content/SurveyJS.*/), at shared/surveyjs-version.json -->
+    <PackageReference Include="SurveyJS" Version="3.2.7" />
+    <PackageReference Include="SurveyJS.Creator" Version="3.2.7" />
+    <PackageReference Include="SurveyJS.Analytics" Version="3.2.7" />
   </ItemGroup>
 
+  <!-- The test and tool projects, the browser tests' node_modules and the app's data live below the root:
+       keep them out of this project's default globs, so `dotnet build` at the root builds only the app -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.12" />
-    <PackageReference Include="SurveyJS" Version="3.2.1" />
-    <PackageReference Include="SurveyJS.Analytics" Version="3.2.1" />
-    <PackageReference Include="SurveyJS.Creator" Version="3.2.1" />
-</ItemGroup>
+    <Compile Remove="tests/**;tools/**;node_modules/**;storage/**" />
+    <Content Remove="tests/**;tools/**;node_modules/**;storage/**;shared/**;package.json;package-lock.json;surveyjs-integration.json;global.json;dotnet-tools.json" />
+    <None Remove="tests/**;tools/**;node_modules/**;storage/**" />
+  </ItemGroup>
+
+  <!-- shared/ is served from outside wwwroot (Program.cs) and read at run time: copy it next to the published app -->
+  <ItemGroup>
+    <None Include="shared/**" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="surveyjs-integration.json" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Endpoints/**/*.cs;Pages/Examples/*.cs;Relay/*.cs" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>

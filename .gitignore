@@ -286,3 +286,12 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+# The app's data: the SQLite database (with its -wal and -shm files), uploads, visitor sandboxes, relay snapshots
+storage/
+# Local settings (copy appsettings.Development.json.example); environment variables work as well
+appsettings.Development.json
+.env
+# The browser tests
+test-results/
+playwright-report/

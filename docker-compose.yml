@@ -1,0 +1,70 @@
+# docker-compose.yml — this app and the SurveyJS service, side by side.
+#
+#   docker compose up --build        → http://localhost:8000 (the relays run in the app, on /ws/)
+#   docker compose up -d surveyjs    → only the service, on http://localhost:3010 (see docker-compose.override.yml)
+#
+# Settings come from your shell or from a .env file next to this one (Compose reads it; the app itself reads
+# appsettings.json and environment variables). The relays and the sandbox pruner run inside the app's one process,
+# so there are no relay or scheduler services.
+
+# One project name for every checkout, so a second clone or worktree manages these containers instead of
+# starting a second surveyjs service that fails on port 3010
+name: surveyjs-aspnet
+
+services:
+    app:                        # your backend: this ASP.NET Core app (migrates and seeds the SQLite database on start)
+        build: .
+        ports: ["8000:8000"]
+        environment:
+            SURVEYJS_SERVICE_URL: http://surveyjs:3000
+            SURVEYJS_LICENSE_KEY: ${SURVEYJS_LICENSE_KEY:-}
+            VALIDATE_RESPONSES: ${VALIDATE_RESPONSES:-false}
+            LINT_DEFINITIONS: ${LINT_DEFINITIONS:-false}
+            AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+            AI_API_KEY: ${AI_API_KEY:-}
+            AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+            DEMO_MODE: ${DEMO_MODE:-false}
+            RELAY_URL: ${RELAY_URL:-}                         # set both when a proxy serves /ws/ on another host
+            EDIT_RELAY_URL: ${EDIT_RELAY_URL:-}
+            SURVEYJS_AI_PROVIDER: ${SURVEYJS_AI_PROVIDER:-}   # only to tell the extract-from-paper page whether extraction is configured
+            OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+            SURVEYJS_BUILD: ${SURVEYJS_BUILD:-}
+        volumes: [storage:/app/storage]
+        depends_on: [surveyjs]
+
+    surveyjs:                   # SurveyJS service (Node.js): SurveyJS Server, built from a pinned commit
+        build:
+            context: https://github.com/surveyjs/surveyjs-server.git#db1ac24b5f984511bbac463c890b6b0a3ebd2dc9
+            # The repository's Dockerfile at this commit, on Node 24 (20 is out of support, and npm on Node 22
+            # fails to install it), plus git in both stages: without it, `npm install --omit=dev` fails on a
+            # devDependency that is a git URL.
+            dockerfile_inline: |
+                FROM node:24-alpine AS build
+                WORKDIR /app
+                RUN apk add --no-cache git
+                COPY package*.json ./
+                RUN npm install
+                COPY tsconfig.json ./
+                COPY src ./src
+                RUN npm run build
+
+                FROM node:24-alpine
+                WORKDIR /app
+                ENV NODE_ENV=production
+                RUN apk add --no-cache git
+                COPY package*.json ./
+                RUN npm install --omit=dev
+                COPY --from=build /app/dist ./dist
+                EXPOSE 3000
+                CMD ["npm", "start"]
+        environment:            # the AI provider the service extracts with; no licence key (this revision ignores it)
+            AI_PROVIDER: ${SURVEYJS_AI_PROVIDER:-}
+            AI_MODEL: ${SURVEYJS_AI_MODEL:-}
+            OLLAMA_BASE_URL: ${SURVEYJS_OLLAMA_BASE_URL:-}
+            OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+        expose: ["3000"]        # reachable by the app only
+
+volumes:
+    storage:                    # the SQLite database, uploads, visitor sandboxes and relay snapshots

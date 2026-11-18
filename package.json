@@ -1,0 +1,19 @@
+{
+  "name": "surveyjs-aspnet-core",
+  "private": true,
+  "description": "Dev tools for the SurveyJS ASP.NET Core examples: the Tailwind CSS build and the shared browser tests. The app itself needs no Node.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "css": "tailwindcss -i Styles/site.css -o wwwroot/css/site.css --minify",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@tailwindcss/cli": "4.3.3",
+    "survey-core": "3.2.7",
+    "tailwindcss": "4.3.3"
+  }
+}

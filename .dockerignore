@@ -1,0 +1,15 @@
+.git
+.github
+.vs
+.vscode
+.idea
+**/bin
+**/obj
+node_modules
+storage
+test-results
+playwright-report
+tests
+tools
+appsettings.Development.json
+.env

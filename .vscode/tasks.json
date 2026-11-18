@@ -1,21 +1,21 @@
 {
     "version": "2.0.0",
-    "command": "dotnet",
-    "args": [],
     "tasks": [
         {
             "label": "build",
             "type": "shell",
             "command": "dotnet",
-            "args": [
-                "build",
-                "${workspaceRoot}/surveyjs-aspnet-core.csproj"
-            ],
+            "args": ["build", "${workspaceFolder}/surveyjs-aspnet-core.csproj"],
             "problemMatcher": "$msCompile",
-            "group": {
-                "_id": "build",
-                "isDefault": false
-            }
+            "group": { "kind": "build", "isDefault": true }
+        },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "tests/SurveyJs.Tests"],
+            "problemMatcher": "$msCompile",
+            "group": "test"
         }
     ]
 }

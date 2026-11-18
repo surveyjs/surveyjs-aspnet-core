@@ -1,0 +1,6 @@
+# Loaded automatically by `docker compose`: publishes the SurveyJS service on the host, so an app started
+# with `dotnet run` (SURVEYJS_SERVICE_URL=http://localhost:3010) and the contract test reach it.
+# docker-compose.yml keeps the page's shape, where only the app can reach the service.
+services:
+    surveyjs:
+        ports: ["127.0.0.1:3010:3000"]
