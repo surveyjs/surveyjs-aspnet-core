@@ -4,7 +4,6 @@
 # Between the two, the browser tests (shared/browser-tests, Playwright and Chromium) run the example pages, and the
 # smoke test runs once. The tests job also runs on Windows, where the shared/ hashes pass only because .gitattributes
 # keeps LF line endings. The image job builds the app's Docker image and starts it as docker-compose.yml does.
-# The deploy workflow (master_surveyjs-aspnet-core.yml) is separate and unchanged.
 name: Contract
 
 on:
@@ -27,7 +26,7 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Build at the root (warnings are errors), as the deploy workflow does
+      - name: Build at the root (warnings are errors)
         run: dotnet build -warnaserror
 
       - name: xUnit tests
