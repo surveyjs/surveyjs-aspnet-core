@@ -1,0 +1,145 @@
+# Checks that this repository still matches the integration docs (contract server-integration-v4): the build with
+# warnings as errors, the xUnit tests (every row of the SurveyJS service status mapping, with a stub), the manifest and
+# regions, the committed CSS, then the shared contract test twice: without the service, and with it plus the AI stub.
+# Between the two, the browser tests (shared/browser-tests, Playwright and Chromium) run the example pages, and the
+# smoke test runs once. The tests job also runs on Windows, where the shared/ hashes pass only because .gitattributes
+# keeps LF line endings. The image job builds the app's Docker image and starts it as docker-compose.yml does.
+# The deploy workflow (master_surveyjs-aspnet-core.yml) is separate and unchanged.
+name: Contract
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    name: Build, tests and check on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build at the root (warnings are errors), as the deploy workflow does
+        run: dotnet build -warnaserror
+
+      - name: xUnit tests
+        run: dotnet test tests/SurveyJs.Tests
+
+      - name: Manifest, regions, shared/ and pins
+        run: dotnet run --project tools/Check -- --complete
+
+  contract:
+    runs-on: ubuntu-latest
+    name: Contract, browser and smoke tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: |
+          dotnet build
+          npm ci
+
+      - name: The committed stylesheet is the build of the pages
+        run: |
+          npm run css
+          git diff --exit-code wwwroot/css/site.css
+
+      - name: Contract test without the service
+        run: dotnet run --project tools/Contract
+        env:
+          SERVICE: "off"
+          AI: "off"
+
+      - name: Smoke test without the service
+        run: dotnet run --project tools/Contract -- --smoke
+        env:
+          SERVICE: "off"
+          AI: "off"
+
+      # host.js and page-tabs.js in a real browser: what the xUnit tests and the contract test never run.
+      # playwright.config.mjs starts the built app on port 8000 against a fresh DATA_DIR
+      - name: Browser tests (Chromium)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+
+      - name: Start the SurveyJS service and the AI stub
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.ci.yml up -d --build surveyjs ai-stub
+          for i in $(seq 1 60); do
+            curl -sf -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:3010/schema > /dev/null && break
+            sleep 2
+          done
+
+      - name: Contract test with the service, the AI stub and the service switches
+        run: dotnet run --project tools/Contract
+        env:
+          SERVICE: "on"
+          AI: stub
+          VALIDATE_RESPONSES: "true"
+          LINT_DEFINITIONS: "true"
+          DEMO_MODE: "true"
+          AI_BASE_URL: http://127.0.0.1:3020/v1
+          AI_API_KEY: stub
+          AI_MODEL: stub
+
+      - name: Service logs
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.ci.yml logs surveyjs ai-stub
+
+      - name: Browser test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  image:
+    runs-on: ubuntu-latest
+    name: Docker image
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start the app (no SDK in the image, migrates and seeds on start)
+        run: docker compose up -d --build --no-deps app
+
+      - name: It answers
+        run: curl -sf --retry 30 --retry-delay 2 --retry-all-errors http://127.0.0.1:8000/up > /dev/null
+
+      # ASPNETCORE_FORWARDEDHEADERS_ENABLED=true applies X-Forwarded-Proto
+      - name: Behind a TLS proxy, the page's URLs are https and its relays wss
+        run: |
+          curl -sf -H 'X-Forwarded-Proto: https' -H 'Host: demo.example.com' -H 'Cookie: demo_user=alice' \
+            http://127.0.0.1:8000/examples/fill-together > page.html
+          grep -q '<link rel="canonical" href="https://demo.example.com/examples/fill-together">' page.html
+          grep -qF '"fill":{"url":"wss://demo.example.com"' page.html
+          grep -qF '"edit":{"url":"wss://demo.example.com"' page.html
+
+      - name: Production settings, not root
+        run: |
+          test "$(docker compose exec -T app printenv ASPNETCORE_ENVIRONMENT)" = "Production"
+          test "$(docker compose exec -T app id -u)" != "0"
+          docker compose logs app | tee app.log
+          grep -q 'Hosting environment: Production' app.log
+
+      - name: App logs
+        if: failure()
+        run: docker compose logs app

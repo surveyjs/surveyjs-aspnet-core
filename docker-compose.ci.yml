@@ -1,0 +1,14 @@
+# Tests only, never production: a deterministic AI provider for extraction and machine translation.
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.ci.yml up -d surveyjs ai-stub
+services:
+    ai-stub:
+        image: node:22-alpine
+        command: ["node", "/shared/contract-tests/ai-stub.mjs"]
+        volumes: ["./shared:/shared:ro"]
+        ports: ["127.0.0.1:3020:3020"]
+
+    surveyjs:
+        environment:
+            AI_PROVIDER: ollama
+            OLLAMA_BASE_URL: http://ai-stub:3020
+        depends_on: [ai-stub]
