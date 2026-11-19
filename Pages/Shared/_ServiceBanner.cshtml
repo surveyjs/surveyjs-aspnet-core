@@ -4,6 +4,6 @@
 {
     <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
         <strong>@(Model.Switch == "VALIDATE_RESPONSES" ? "Response validation is disabled." : "Form schema checking is disabled.")</strong>
-        Set <code>@Model.Switch=true</code> in <code>appsettings.Development.json</code> or as an environment variable, start the service with <code>docker compose up -d surveyjs</code>, and restart the app.
+        Set <code>@Model.Switch</code> to <code>true</code> in <code>appsettings.json</code> or as an environment variable, start the service with <code>docker compose up -d surveyjs</code>, and restart the app.
     </p>
 }

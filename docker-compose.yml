@@ -3,9 +3,10 @@
 #   docker compose up --build        → http://localhost:8000 (the relays run in the app, on /ws/)
 #   docker compose up -d surveyjs    → only the service, on http://localhost:3010 (see docker-compose.override.yml)
 #
-# Settings come from your shell or from a .env file next to this one (Compose reads it; the app itself reads
-# appsettings.json and environment variables). The relays and the sandbox pruner run inside the app's one process,
-# so there are no relay or scheduler services.
+# Every setting but the private keys comes from appsettings.json in the image (rebuild after changing it:
+# `docker compose up --build`). The private keys come from your shell or from a .env file next to this one (see
+# .env.example; Compose reads it, the app doesn't). The relays and the sandbox pruner run inside the app's one
+# process, so there are no relay or scheduler services.
 
 # One project name for every checkout, so a second clone or worktree manages these containers instead of
 # starting a second surveyjs service that fails on port 3010
@@ -17,17 +18,10 @@ services:
         ports: ["8000:8000"]
         environment:
             SURVEYJS_SERVICE_URL: http://surveyjs:3000
+            # The private keys; every other setting comes from appsettings.json in the image
             SURVEYJS_LICENSE_KEY: ${SURVEYJS_LICENSE_KEY:-}
-            VALIDATE_RESPONSES: ${VALIDATE_RESPONSES:-false}
-            LINT_DEFINITIONS: ${LINT_DEFINITIONS:-false}
-            AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
             AI_API_KEY: ${AI_API_KEY:-}
-            AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
-            DEMO_MODE: ${DEMO_MODE:-false}
-            RELAY_URL: ${RELAY_URL:-}                         # set both when a proxy serves /ws/ on another host
-            EDIT_RELAY_URL: ${EDIT_RELAY_URL:-}
-            SURVEYJS_AI_PROVIDER: ${SURVEYJS_AI_PROVIDER:-}   # only to tell the extract-from-paper page whether extraction is configured
-            OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+            OPENAI_API_KEY: ${OPENAI_API_KEY:-}               # only to tell the extract-from-paper page whether extraction is configured
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
             SURVEYJS_BUILD: ${SURVEYJS_BUILD:-}
         volumes: [storage:/app/storage]

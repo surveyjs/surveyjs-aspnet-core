@@ -289,7 +289,7 @@ __pycache__/
 
 # The app's data: the SQLite database (with its -wal and -shm files), uploads, visitor sandboxes, relay snapshots
 storage/
-# Local settings (copy appsettings.Development.json.example); environment variables work as well
+# Local overrides of appsettings.json (optional; the private keys go in user secrets)
 appsettings.Development.json
 .env
 # The browser tests

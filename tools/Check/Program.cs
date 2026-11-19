@@ -22,7 +22,7 @@ string[] steps =
 string[] regionSources = ["Endpoints", "Relay", "Pages/Examples", "shared/client"];
 string[] relayFiles = ["Endpoints/FillTogether.cs", "Endpoints/EditTogether.cs"];
 const int maxRegionLines = 24, maxRelayRegionLines = 60;
-const string docs = "https://surveyjs.io/documentation/backend-integration-aspnet";
+const string docs = "https://surveyjs.io/documentation/backend-integration-aspnet-core";
 // This platform's plumbing: a server region calls Integration/ or Data/ for these instead of showing them
 string[] plumbing = ["SqliteConnection", "ExecuteSql", "JsonSerializerOptions", "HttpRequestException", "TaskCanceledException", "CultureInfo"];
 // EF Core's raw SQL methods take a string, so a value pasted into it is SQL: use the interpolated FromSql / ExecuteSql

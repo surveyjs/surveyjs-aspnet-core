@@ -2,7 +2,9 @@ namespace SurveyJsAspNetCore.Configuration;
 
 /// <summary>
 /// Every SurveyJS and demo setting, bound once. The keys are the cross-platform names (APP_PORT, SURVEYJS_SERVICE_URL…),
-/// so environment variables, appsettings.json and the contract runner use the same words. Code reads
+/// so environment variables, appsettings.json, user secrets and the contract runner use the same words. appsettings.json
+/// (committed) holds every setting but the private keys; those come from user secrets in Development
+/// (<c>dotnet user-secrets set AI_API_KEY …</c>) and from environment variables elsewhere. Code reads
 /// <c>IOptions&lt;SurveyJsOptions&gt;</c>, never <c>Environment.GetEnvironmentVariable</c>.
 /// </summary>
 public sealed class SurveyJsOptions
@@ -47,10 +49,11 @@ public sealed class SurveyJsOptions
     public int AiCallsPerDay { get; set; } = 20;
 
     // The Server Integration docs: step pages link to <Docs>#<anchor> (anchor: surveyjs-integration.json)
-    public string Docs { get; set; } = "https://surveyjs.io/documentation/backend-integration-aspnet";
+    public string Docs { get; set; } = "https://surveyjs.io/documentation/backend-integration-aspnet-core";
     public string GitHub { get; set; } = "https://github.com/surveyjs/surveyjs-aspnet-core";
 
-    /// <summary>Reads every setting from configuration (environment variables win over appsettings.json).</summary>
+    /// <summary>Reads every setting from configuration (environment variables win over user secrets, and both over
+    /// appsettings.json).</summary>
     public static SurveyJsOptions From(IConfiguration config, string contentRoot)
     {
         var options = new SurveyJsOptions();

@@ -3,7 +3,7 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
-const string docs = "https://surveyjs.io/documentation/backend-integration-aspnet";
+const string docs = "https://surveyjs.io/documentation/backend-integration-aspnet-core";
 var root = Directory.GetCurrentDirectory();
 while (!File.Exists(Path.Combine(root, "surveyjs-integration.json")))
 {

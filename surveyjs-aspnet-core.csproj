@@ -8,6 +8,7 @@
     <RootNamespace>SurveyJsAspNetCore</RootNamespace>
     <AssemblyName>surveyjs-aspnet-core</AssemblyName>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <UserSecretsId>970478b5-752a-4055-ae23-61eec81d60ae</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

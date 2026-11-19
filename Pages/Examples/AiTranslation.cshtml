@@ -12,7 +12,7 @@
     @if (Model.Settings.AiApiKey is null)
     {
         <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-            <strong>AI translation is unavailable.</strong> Configure <code>AI_API_KEY</code> in <code>appsettings.Development.json</code> or an environment variable to enable it, then restart the app.
+            <strong>AI translation is unavailable.</strong> Set <code>AI_API_KEY</code> with <code>dotnet user-secrets set AI_API_KEY &lt;key&gt;</code> or as an environment variable to enable it, then restart the app.
         </p>
     }
 }

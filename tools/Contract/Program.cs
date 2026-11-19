@@ -35,7 +35,7 @@ var origin = $"http://127.0.0.1:{port}";
 
 var env = new Dictionary<string, string?>
 {
-    ["ASPNETCORE_ENVIRONMENT"] = "Production",   // appsettings.Development.json must not switch anything on
+    ["ASPNETCORE_ENVIRONMENT"] = "Production",   // appsettings.Development.json and user secrets must not switch anything on
     ["DATA_DIR"] = dataDir,
     ["APP_PORT"] = port.ToString(),
     ["APP_HOST"] = "127.0.0.1",

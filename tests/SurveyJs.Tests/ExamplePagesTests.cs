@@ -48,7 +48,7 @@ public sealed partial class ExamplePagesTests : IAsyncLifetime
         }
         Assert.Equal(StartOverPages.Contains(slug), html.Contains("id=\"start-over\""));
         Assert.Contains($"{step["title"]} · SurveyJS + ASP.NET Core", html);
-        Assert.Contains($"https://surveyjs.io/documentation/backend-integration-aspnet#{step["anchor"]}", html);
+        Assert.Contains($"https://surveyjs.io/documentation/backend-integration-aspnet-core#{step["anchor"]}", html);
         Assert.Contains("data-code-section", html);
         Assert.Contains("Running test", html);
     }
