@@ -4,6 +4,7 @@ This is the .NET code behind [Integrate SurveyJS with ASP.NET Core](https://surv
 
 - The examples running online: [surveyjs-aspnet-mvc.demos.surveyjs.io](https://surveyjs-aspnet-mvc.demos.surveyjs.io)
 - SurveyJS demos: [app.demos.surveyjs.io](https://app.demos.surveyjs.io)
+- Backend integration examples on the SurveyJS website: [surveyjs.io/backend-integration/examples](https://surveyjs.io/backend-integration/examples)
 - The same examples for other platforms: [PHP (Laravel)](https://github.com/surveyjs/surveyjs-php-laravel), [Node.js (Express)](https://github.com/surveyjs/surveyjs-nodejs-express), [Python (FastAPI)](https://github.com/surveyjs/surveyjs-python-fastapi), [Next.js](https://github.com/surveyjs/surveyjs-nextjs), [Java (Spring Boot)](https://github.com/surveyjs/surveyjs-java-spring-boot)
 
 ## Run it
@@ -317,6 +318,12 @@ When you copy an example into your app, leave out the demo-only code:
 - the `Demo/` folder, and its lines in `Program.cs`;
 - `Relay/RoomKey.cs`'s sandbox keys;
 - `Pages/`, `shared/ui/` (the page frame, its tabs and highlighting, the fonts and site images) and `shared/client/host.js`. Its `mountSurvey()` is one line: `renderSurvey(survey, element)` from `survey-js-ui`.
+
+## Licence
+
+The code in this repository is available under the [MIT licence](LICENSE).
+
+The examples use SurveyJS Form Library, which is MIT-licensed as well. The examples marked "Commercial" in the Licence column above also use SurveyJS Survey Creator, Dashboard or PDF Generator, which are commercial products. You can integrate them and evaluate their functionality without a licence. Production use requires a developer licence for each developer who works with the SurveyJS APIs or implements the integration. See the [SurveyJS Licensing FAQ](https://surveyjs.io/faq#licensing) and the [End-User License Agreement](https://surveyjs.io/Developer-License-Agreement.pdf).
 
 ## Other Resources
 

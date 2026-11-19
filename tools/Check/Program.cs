@@ -152,7 +152,7 @@ if (File.Exists(Path.Combine(root, "README.md")))
     var prose = Regex.Replace(Read("README.md"), "<!-- steps:start[\\s\\S]*?<!-- steps:end -->", "");
     var links = Regex.Matches(prose, @"\]\((https?://[^)\s]+)\)|<(https?://[^>\s]+)>")
         .Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value)
-        .Where(url => url.StartsWith(docs) || Regex.IsMatch(url, @"^https?://(www\.)?surveyjs\.io(/documentation)?/backend-integration"))
+        .Where(url => url.StartsWith(docs) || Regex.IsMatch(url, @"^https?://(www\.)?surveyjs\.io(/documentation)?/backend-integration(?!/examples)"))
         .ToList();
     if (links.Count != 2 || links.Any(url => url != docs))
         errors.Add($"README.md must link to the docs exactly twice outside the example table, both to {docs}; found {links.Count}");
